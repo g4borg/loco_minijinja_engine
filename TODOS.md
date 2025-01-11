@@ -1,0 +1,4 @@
+- ability to provide custom `Environment` for the Initializer
+- ability to define template directory / directories for the Initializer
+- markdown plugin
+- integration tests

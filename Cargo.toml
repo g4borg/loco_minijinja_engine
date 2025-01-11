@@ -1,0 +1,20 @@
+[workspace]
+
+[package]
+name = "loco-minijinja-engine"
+version = "0.14.0"
+edition = "2021"
+
+[features]
+autoreloader = ["dep:minijinja-autoreload"]
+
+[workspace.dependencies]
+loco-rs = { version = "0.14.0", default-features = false }
+
+[dependencies]
+async-trait = "0.1"
+axum = "0.8"
+loco-rs = { workspace = true }
+minijinja = { version = "2.6", features = ["loader"] }
+minijinja-autoreload = { version = "2.6", optional = true }
+serde = "1.0"
