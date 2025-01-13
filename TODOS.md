@@ -2,3 +2,4 @@
 - ability to define template directory / directories for the Initializer
 - markdown plugin
 - integration tests
+- investigate how dependency of tera works in loco ("Tera will probably still stay a dependency for your app if you switch Template Engine, so switching to minijinja is really just about preference." struck from readme.)
