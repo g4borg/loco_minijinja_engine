@@ -6,7 +6,7 @@ use loco_rs::{
     errors::Error,
     Result,
 };
-use minijinja::{filters::default, path_loader, Environment};
+use minijinja::{path_loader, Environment};
 #[cfg(feature = "autoreloader")]
 use minijinja_autoreload::AutoReloader;
 use serde::Serialize;
@@ -28,10 +28,13 @@ pub struct MinijinjaView<'a> {
 
 impl MinijinjaView<'_> {
     pub fn build() -> Result<Self> {
-        Self::from_custom_dir(&TEMPLATES_DIR)
+        Self::from_custom(&TEMPLATES_DIR, None)
     }
 
-    pub fn from_custom_dir<P: AsRef<Path>>(path: &P) -> Result<Self> {
+    pub fn from_custom<P: AsRef<Path>>(
+        path: &P,
+        custom_environment: Option<Environment<'static>>,
+    ) -> Result<Self> {
         if !path.as_ref().exists() {
             return Err(Error::string(&format!(
                 "missing templates directory: `{}`",
@@ -43,20 +46,19 @@ impl MinijinjaView<'_> {
 
         #[cfg(feature = "autoreloader")]
         let reloader = AutoReloader::new(move |notifier| {
-            let mut environment = Environment::new();
+            let cust_env = custom_environment.clone();
+            let mut env = cust_env.unwrap_or_else(Environment::new);
             let template_path = template_path.clone();
-
-            environment.set_loader(path_loader(&template_path));
-
+            env.set_loader(path_loader(&template_path));
             notifier.watch_path(template_path, true);
-            Ok(environment)
+            Ok(env)
         });
 
         #[cfg(not(feature = "autoreloader"))]
         let environment = {
-            let mut environment = Environment::new();
-            environment.set_loader(path_loader(&template_path));
-            environment
+            let mut env = custom_environment.unwrap_or_else(Environment::new);
+            env.set_loader(path_loader(&template_path));
+            env
         };
 
         Ok(Self {
@@ -124,5 +126,36 @@ impl Initializer for MinijinjaViewEngineInitializer {
     async fn after_routes(&self, router: AxumRouter, _ctx: &AppContext) -> Result<AxumRouter> {
         let jinja = MinijinjaView::build()?;
         Ok(router.layer(Extension(ViewEngine::from(jinja))))
+    }
+}
+
+pub struct MinijinjaViewEngineConfigurableInitializer {
+    template_directory: String,
+    custom_environment: Option<Environment<'static>>,
+}
+
+#[async_trait]
+impl Initializer for MinijinjaViewEngineConfigurableInitializer {
+    fn name(&self) -> String {
+        "minijinja".to_string()
+    }
+
+    async fn after_routes(&self, router: AxumRouter, _ctx: &AppContext) -> Result<AxumRouter> {
+        let custom_environment = self.custom_environment.clone(); // as this is a &self function, we have to clone here.
+        let jinja =
+            MinijinjaView::from_custom::<String>(&self.template_directory, custom_environment)?;
+        Ok(router.layer(Extension(ViewEngine::from(jinja))))
+    }
+}
+
+impl MinijinjaViewEngineConfigurableInitializer {
+    pub fn new(
+        template_directory: String,
+        custom_environment: Option<Environment<'static>>,
+    ) -> Self {
+        MinijinjaViewEngineConfigurableInitializer {
+            template_directory: template_directory,
+            custom_environment: custom_environment,
+        }
     }
 }

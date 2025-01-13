@@ -4,17 +4,35 @@
 name = "loco-minijinja-engine"
 version = "0.14.0"
 edition = "2021"
+# For releasing:
+authors = ["Gabor Körber <gab@g4b.org>"]
+description = "Initializers to use Minijinja Templating Engine in Loco.rs"
+repository = "https://github.com/g4borg/loco_minijinja_engine"
+homepage = "https://github.com/g4borg/loco_minijinja_engine"
+# documentation = "https://docs.rs/my_library"
+keywords = ["loco", "loco.rs", "minijinja"]
+categories = ["convenience", "bindings"]
+# license = "MIT OR Apache-2.0"
+readme = "README.md"
+
 
 [features]
+# default = ["autoreloader"]
 autoreloader = ["dep:minijinja-autoreload"]
 
 [workspace.dependencies]
 loco-rs = { version = "0.14.0", default-features = false }
 
+
 [dependencies]
 async-trait = "0.1"
 axum = "0.8"
 loco-rs = { workspace = true }
+tracing-subscriber = { version = "0.3", features = [
+    "env-filter",
+    "json",
+] } # required by loco-rs to build correctly
 minijinja = { version = "2.6", features = ["loader"] }
 minijinja-autoreload = { version = "2.6", optional = true }
 serde = "1.0"
+serde_json = { version = "1" }

@@ -40,7 +40,10 @@ impl Hooks for App {
 
     async fn initializers(_ctx: &AppContext) -> Result<Vec<Box<dyn Initializer>>> {
         Ok(vec![Box::new(
-            loco_minijinja_engine::MinijinjaViewEngineInitializer,
+            loco_minijinja_engine::MinijinjaViewEngineConfigurableInitializer::new(
+                "assets/templates".to_string(),
+                None,
+            ),
         )])
     }
 
