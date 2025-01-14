@@ -12,6 +12,10 @@ use minijinja_autoreload::AutoReloader;
 use serde::Serialize;
 use std::{marker::PhantomData, path::Path, sync::Arc};
 
+#[cfg(feature = "testing")]
+const TEMPLATES_DIR: &str = "tests";
+
+#[cfg(not(feature = "testing"))]
 const TEMPLATES_DIR: &str = "assets/templates";
 
 #[derive(Clone)]
