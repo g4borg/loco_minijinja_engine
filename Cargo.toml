@@ -10,15 +10,16 @@ description = "Initializers to use Minijinja Templating Engine in Loco.rs"
 repository = "https://github.com/g4borg/loco_minijinja_engine"
 homepage = "https://github.com/g4borg/loco_minijinja_engine"
 # documentation = "https://docs.rs/my_library"
-keywords = ["loco", "loco.rs", "minijinja"]
+keywords = ["loco", "loco.rs", "minijinja", "templates"]
 categories = ["convenience", "bindings"]
 # license = "MIT OR Apache-2.0"
 readme = "README.md"
-
+exclude = ["/tests", "/examples"]
 
 [features]
-# default = ["autoreloader"]
+default = ["testing"]
 autoreloader = ["dep:minijinja-autoreload"]
+testing = ["loco-rs/testing"]
 
 [workspace.dependencies]
 loco-rs = { version = "0.14.0", default-features = false }
@@ -36,3 +37,8 @@ minijinja = { version = "2.6", features = ["loader"] }
 minijinja-autoreload = { version = "2.6", optional = true }
 serde = "1.0"
 serde_json = { version = "1" }
+
+[dev-dependencies]
+mockall = "0.13"
+tower = "0.5"
+tokio = { version = "1", features = ["full"] }

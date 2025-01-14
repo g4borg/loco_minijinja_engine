@@ -1,0 +1,10 @@
+[no_autoreloader_coverage]
+features = "testing"
+output-dir = "./coverage_output"
+out = ["Html", "Xml"]
+
+[autoreloader_coverage]
+features = "testing autoreloader"
+output-dir = "./coverage_output"
+# release = true
+out = ["Html", "Xml"]
